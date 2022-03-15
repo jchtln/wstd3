@@ -31,7 +31,7 @@ Réponse::
 --
 
 | /Question/{idUser}
-| GET
+| GET f
 | Un Etudiant peut consulter ses questions
 
 --
