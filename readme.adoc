@@ -1,0 +1,68 @@
+.URIs de votre service
+[cols="2m,1a,6a"]
+|===
+| URI | Méthode | Description
+| /inscription
+| POST
+| Inscrire un utilisateur.
+
+--
+Requête::
+Corp de la requete avec numéro étudiant et password de l'étudiant, nom, prénom et date de naissance de l'étudiant.
+Réponse::
+* 200 OK : Avec ecris l'utilisateur "numEtu" est correctement enregistrée.
+--
+
+| /Question    /user/{iduser}/question
+| POST
+| Un Etudiant pose une question.
+
+--
+Requête::
+
+----
+{
+"Question": "Ma question"
+}
+----
+
+Réponse::
+* 200 OK : Votre question a bien été enregistrer, en text/plain.
+--
+
+| /Question/{idUser}
+| GET
+| Un Etudiant peut consulter ses questions
+
+--
+Requête::
+
+
+
+pas de corp, tout est dans l'uri
+
+
+
+Réponse::
+* 200 OK : Renvoie la liste des reponses a ses questions, en text/plain.
+--
+
+| /Reponse
+| POST
+| Un Professeur peut répondre à une question en attente
+
+--
+
+Requête::
+
+----
+{
+"Question": "Ma réponse"
+}
+----
+
+Réponse::
+* 200 OK: Vous avez bien répondu à la question.
+
+
+|===
