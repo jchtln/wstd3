@@ -5,8 +5,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import univ.orleans.ws3.modele.FacadeUtilisateurs;
-import univ.orleans.ws3.modele.exception.LoginDejaUtiliseException;
+import univ.orleans.ws3.modele1.FacadeUtilisateurs;
+import univ.orleans.ws3.modele1.exception.LoginDejaUtiliseException;
 
 @SpringBootApplication
 public class Ws3Application {

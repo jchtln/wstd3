@@ -1,173 +1,126 @@
 package univ.orleans.ws3.modele;
 
+import fr.univ.orleans.info.m1.ws.tp4.modele.exceptions.AccessIllegalAUneQuestionException;
+import fr.univ.orleans.info.m1.ws.tp4.modele.exceptions.QuestionInexistanteException;
+import fr.univ.orleans.info.m1.ws.tp4.modele.exceptions.UtilisateurInexistantException;
 import org.springframework.stereotype.Component;
-import univ.orleans.ws3.modele.exception.AccessIllegalAUneQuestionException;
-import univ.orleans.ws3.modele.exception.QuestionInexistanteException;
-import univ.orleans.ws3.modele.exception.UtilisateurInexistantException;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class FacadeApplication {
+
     /**
-     * Les utilisateurs ne sont pas stockés ici, on n'utilise que leur identifiant integer
+     * Les utilisateurs ne sont pas stockés ici, on n'utilise que leur identifiant integer.
      * On stocke ici toutes les questions posées par chaque utilisateur
      */
-    private Map<Integer, Collection<Question>> utilisateursQuestionsMap;
+    private final Map<Integer, Collection<Question>> questionsParUtilisateur;
 
-    /**
-     * Map de toutes les questions posées
-     */
-    private Map<String,Question> questionsMap;
-
+    private final Map<String, Question> questionsPosees;
 
     public FacadeApplication() {
-        utilisateursQuestionsMap = new HashMap<Integer, Collection<Question>>();
-        questionsMap = new HashMap<String, Question>();
-
+        questionsParUtilisateur = new HashMap<>();
+        questionsPosees = new HashMap<>();
     }
 
     /**
-     * Permet à un idUtilisateur de poser une question
-     * @param idUtilisateur
-     * @param question
-     * @return l'identifiant string aléatoire de la question créée
+     * Permet à un utilisateur de poser une question.
      */
-    public String ajouterUneQuestion(int idUtilisateur, String question) {
-        Question question1 = new Question(idUtilisateur,question);
-        questionsMap.put(question1.getIdQuestion(),question1);
-        if (utilisateursQuestionsMap.containsKey(idUtilisateur)) {
-            this.utilisateursQuestionsMap.get(idUtilisateur).add(question1);
+    public Question ajouterUneQuestion(int idUtilisateur, String libelleQuestion) {
+        Question question = new Question(idUtilisateur, libelleQuestion);
+        questionsPosees.put(question.getIdQuestion(), question);
+        if (questionsParUtilisateur.containsKey(idUtilisateur)) {
+            this.questionsParUtilisateur.get(idUtilisateur).add(question);
+        } else {
+            Collection<Question> questions = new ArrayList<>();
+            questions.add(question);
+            this.questionsParUtilisateur.put(idUtilisateur, questions);
         }
-        else {
-            Collection<Question> questions = new ArrayList<Question>();
-            questions.add(question1);
-            this.utilisateursQuestionsMap.put(idUtilisateur,questions);
-        }
-        return question1.getIdQuestion();
+        return question;
     }
+
     /**
-     * Permet à un utilisateur de répondre à une question
-     * @param idQuestion
-     * @param reponse
-     * @throws QuestionInexistanteException
+     * Ajoute/remplace une réponse à une question.
      */
     public void repondreAUneQuestion(String idQuestion, String reponse) throws QuestionInexistanteException {
-        if (this.questionsMap.containsKey(idQuestion)) {
-            this.questionsMap.get(idQuestion).setReponse(reponse);
-        }
-        else {
+        if (this.questionsPosees.containsKey(idQuestion)) {
+            this.questionsPosees.get(idQuestion).setReponse(reponse);
+        } else {
             throw new QuestionInexistanteException();
         }
     }
-    /**
-     * Permet de récupérer toutes les questions en attente de réponse
-     * @return
-     */
 
-    public Collection<Question> getQuestionsSansReponses(){
-        return this.questionsMap.values().stream().filter(q ->Objects.isNull(
+    /**
+     * Retourne toutes les questions en attente de réponse.
+     */
+    public Collection<Question> getQuestionsSansReponses() {
+        return this.questionsPosees.values().stream().filter(q -> Objects.isNull(
                 q.getReponse()) || q.getReponse().isBlank()).collect(Collectors.<Question>toList());
     }
 
     /**
-     * Permet à un utilisateur de récupérer toutes les questions qu'il a posées pour lesquelles
-     * quelqu'un a répondu
-     * @param idUtilisateur
-     * @return
-     * @throws UtilisateurInexistantException
+     * Retourne toutes les questions posées par un utilisateur et pour lesquelles quelqu'un a répondu.
      */
-
     public Collection<Question> getQuestionsAvecReponsesByUser(int idUtilisateur) throws UtilisateurInexistantException {
-        if (this.utilisateursQuestionsMap.containsKey(idUtilisateur)) {
-            return this.utilisateursQuestionsMap.get(idUtilisateur)
+        if (this.questionsParUtilisateur.containsKey(idUtilisateur)) {
+            return this.questionsParUtilisateur.get(idUtilisateur)
                     .stream().filter(q -> Objects.nonNull(q.getReponse())
                             && (!q.getReponse().isBlank())).collect(Collectors.toList());
-        }
-        else {
+        } else {
             throw new UtilisateurInexistantException();
         }
     }
 
-
     /**
-     * Permet à un utilisateur de récupérer toutes les questions qu'il a posées pour lesquelles
-     * personne n'a répondu
-     * @param idUtilisateur
-     * @return
-     * @throws UtilisateurInexistantException
+     * Retourne toutes les questions posées par un utilisateur et pour lesquelles personne n'a répondu.
      */
-
     public Collection<Question> getQuestionsSansReponsesByUser(int idUtilisateur) throws UtilisateurInexistantException {
-        if (this.utilisateursQuestionsMap.containsKey(idUtilisateur)) {
-            return this.utilisateursQuestionsMap.get(idUtilisateur)
+        if (this.questionsParUtilisateur.containsKey(idUtilisateur)) {
+            return this.questionsParUtilisateur.get(idUtilisateur)
                     .stream()
                     .filter(q -> Objects.isNull(q.getReponse()) || q.getReponse().isBlank()).collect(Collectors.toList());
-        }
-        else {
+        } else {
             throw new UtilisateurInexistantException();
 
         }
     }
 
-
     /**
-     * Permet de récupérer toutes les questions posées par un utilisateur
-     * @param idUtilisateur
-     * @return
-     * @throws UtilisateurInexistantException
+     * Retourne toutes les questions posées par un utilisateur.
      */
-
-
-
     public Collection<Question> getToutesLesQuestionsByUser(int idUtilisateur) throws UtilisateurInexistantException {
-        if (this.utilisateursQuestionsMap.containsKey(idUtilisateur)) {
-            return this.utilisateursQuestionsMap.get(idUtilisateur);
-        }
-        else {
+        if (this.questionsParUtilisateur.containsKey(idUtilisateur)) {
+            return this.questionsParUtilisateur.get(idUtilisateur);
+        } else {
             throw new UtilisateurInexistantException();
-
         }
     }
 
     /**
-     * Permet de récupérer l'ensemble des questions posées
-     * @return
+     * Retourne l'ensemble des questions posées.
      */
     public Collection<Question> getToutesLesQuestions() {
-        return questionsMap.values();
+        return questionsPosees.values();
     }
 
-
     /**
-     * Permet de récupérer une question à partir du moment où
-     * cette personne appartient à l'utilisateur qui l'a posée
-     * @param idUtilisateur
-     * @param idQuestion
-     * @return
-     * @throws QuestionInexistanteException
-     * @throws AccessIllegalAUneQuestionException
-     * @throws UtilisateurInexistantException
+     * Retourne une question d'un utilisateur, si cette question a bien été posée par cet utilisateur.
      */
-
-    public Question getQuestionByIdPourUnUtilisateur(int idUtilisateur,String idQuestion) throws QuestionInexistanteException, AccessIllegalAUneQuestionException, UtilisateurInexistantException {
-        Question q = questionsMap.get(idQuestion);
-        if (Objects.isNull(q))
+    public Question getQuestionByIdPourUnUtilisateur(int idUtilisateur, String idQuestion) throws QuestionInexistanteException, AccessIllegalAUneQuestionException, UtilisateurInexistantException {
+        Question question = questionsPosees.get(idQuestion);
+        if (Objects.isNull(question))
             throw new QuestionInexistanteException();
-        Collection<Question> questionsIdUtilisateur = this.utilisateursQuestionsMap.get(idUtilisateur);
+        Collection<Question> questionsIdUtilisateur = this.questionsParUtilisateur.get(idUtilisateur);
 
         if (Objects.isNull(questionsIdUtilisateur)) {
             throw new UtilisateurInexistantException();
         }
 
-
-        if (questionsIdUtilisateur.contains(q)) {
-            return q;
-        }
-        else {
+        if (questionsIdUtilisateur.contains(question)) {
+            return question;
+        } else {
             throw new AccessIllegalAUneQuestionException();
         }
-
     }
 }

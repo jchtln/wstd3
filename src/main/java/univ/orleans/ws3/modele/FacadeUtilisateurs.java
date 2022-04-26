@@ -1,81 +1,53 @@
 package univ.orleans.ws3.modele;
 
+import fr.univ.orleans.info.m1.ws.tp4.modele.exceptions.LoginDejaUtiliseException;
+import fr.univ.orleans.info.m1.ws.tp4.modele.exceptions.UtilisateurInexistantException;
 import org.springframework.stereotype.Component;
-import univ.orleans.ws3.modele.exception.LoginDejaUtiliseException;
-import univ.orleans.ws3.modele.exception.UtilisateurInexistantException;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class FacadeUtilisateurs {
-    /**
-     * Permet de stocker l'ensemble des utilisateurs inscrits au service
-     */
 
-
-
-    private Map<String,Utilisateur> utilisateursMap;
+    private final Map<String, Utilisateur> utilisateursMap;
 
     public FacadeUtilisateurs() {
         utilisateursMap = new HashMap<>();
     }
 
-    /**
-     * Permet de récupérer l'identifiant Integer à partir du login (email)
-     * @param login
-     * @return
-     * @throws UtilisateurInexistantException
-     */
-    public int getUtilisateurIntId(String login) throws UtilisateurInexistantException {
-        if (utilisateursMap.containsKey(login))
-            return this.utilisateursMap.get(login).getIdUtilisateur();
+    public int getUtilisateurIntId(String email) throws UtilisateurInexistantException {
+        return getUtilisateurByEmail(email).getIdUtilisateur();
+    }
+
+    public Utilisateur getUtilisateurByEmail(String email) throws UtilisateurInexistantException {
+        if (utilisateursMap.containsKey(email))
+            return this.utilisateursMap.get(email);
         else
             throw new UtilisateurInexistantException();
     }
 
-    /**
-     * Permet de récupérer un Utilisateur à partir de son login
-     * @param login
-     * @return
-     */
-
-    public Utilisateur getUtilisateurByLogin(String login) {
-        return utilisateursMap.get(login);
-    }
-
-
-    /**
-     * Permet d'inscrire un nouvel utilisateur à la plate-forme
-     * @param login
-     * @param mdp
-     * @return son identifiant Integer
-     * @throws LoginDejaUtiliseException
-     */
-    public int inscrireUtilisateur(String login, String mdp) throws LoginDejaUtiliseException {
-        if (utilisateursMap.containsKey(login))
+    public Utilisateur inscrireUtilisateur(String email, String password) throws LoginDejaUtiliseException {
+        if (utilisateursMap.containsKey(email))
             throw new LoginDejaUtiliseException();
         else {
-            Utilisateur utilisateur = new Utilisateur(login,mdp);
-            utilisateursMap.put(utilisateur.getLogin(),utilisateur);
-            return utilisateur.getIdUtilisateur();
+            Utilisateur utilisateur = new Utilisateur(email, password);
+            utilisateursMap.put(utilisateur.getEmail(), utilisateur);
+            return utilisateur;
         }
     }
 
-
-    /**
-     * Permet de vérifier si le mot de passe est correct (useless
-     * dans la version finale)
-     * @param login
-     * @param motDePasse
-     * @return
-     */
-    public boolean verifierMotDePasse(String login, String motDePasse){
-        if (utilisateursMap.containsKey(login)){
-            return utilisateursMap.get(login).verifierMotDePasse(motDePasse);
-        }
-        else
+    public boolean verifierMotDePasse(String email, String password) {
+        if (utilisateursMap.containsKey(email)) {
+            return utilisateursMap.get(email).verifierPassword(password);
+        } else {
             return false;
+        }
+    }
+
+    public Collection<Utilisateur> getAllUtilisateurs() {
+        return utilisateursMap.values();
     }
 
 }

@@ -1,10 +1,10 @@
-package univ.orleans.ws3.modele;
+package univ.orleans.ws3.modele1;
 
 import java.util.UUID;
 
 public class Question {
-    private int idUtilisateur;
-    private String libelleQuestion;
+    private  int idUtilisateur;
+    private  String libelleQuestion;
     private String reponse;
     private String idQuestion;
 

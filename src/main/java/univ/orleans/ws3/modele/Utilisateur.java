@@ -2,35 +2,32 @@ package univ.orleans.ws3.modele;
 
 public class Utilisateur {
 
-    private String login;
-    private String motDePasse;
-    private int idUtilisateur;
-    private static int IDS=0;
-    private boolean isEtudiant;
+    private static int lastId = 0;
 
+    private final String email;
+    private final String password;
+    private final int idUtilisateur;
 
-    public Utilisateur(String login, String motDePasse, boolean isEtudiant) {
-        this.login = login;
-        this.motDePasse = motDePasse;
-        this.isEtudiant = isEtudiant;
-        this.idUtilisateur = IDS++;
+    public Utilisateur(String email, String password) {
+        idUtilisateur = lastId++;
+        this.email = email;
+        this.password = password;
     }
 
-    public String getLogin() {
-        return login;
+    public String getEmail() {
+        return email;
     }
 
     public int getIdUtilisateur() {
         return idUtilisateur;
     }
 
-
-    public boolean verifierMotDePasse(String motDePasse){
-        return this.motDePasse.equals(motDePasse);
+    public String getEncodedPassword() {
+        return password;
     }
 
-    public String getMotDePasse() {
-        return this.motDePasse;
+    public boolean verifierPassword(String motDePasse) {
+        return this.password.equals(motDePasse);
     }
 
 }

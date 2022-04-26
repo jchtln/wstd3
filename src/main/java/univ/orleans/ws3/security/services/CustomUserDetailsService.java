@@ -1,16 +1,14 @@
-package univ.orleans.ws3.config;
+package univ.orleans.ws3.security.services;
 
+import fr.univ.orleans.info.m1.ws.tp4.modele.FacadeUtilisateurs;
+import fr.univ.orleans.info.m1.ws.tp4.modele.Role;
+import fr.univ.orleans.info.m1.ws.tp4.modele.Utilisateur;
+import fr.univ.orleans.info.m1.ws.tp4.modele.exceptions.UtilisateurInexistantException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import univ.orleans.ws3.modele1.FacadeUtilisateurs;
-import univ.orleans.ws3.modele1.Utilisateur;
-import univ.orleans.ws3.modele1.exception.UtilisateurInexistantException;
-
-import javax.management.relation.Role;
 
 public class CustomUserDetailsService implements UserDetailsService {
 
